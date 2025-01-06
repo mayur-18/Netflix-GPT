@@ -1,9 +1,8 @@
 import Header from "./Header";
 import { useState, useRef } from "react";
 import { CheckValidate } from "../Utils/validate";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword ,updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../Utils/firebase"
-import { useNavigate } from "react-router-dom";
 import { addUser } from "../Utils/useSlice";
 import { useDispatch } from "react-redux";
 const Login = () => {
@@ -12,11 +11,12 @@ const Login = () => {
     const [checkErrorMsg, setcheckErrorMsg] = useState(null)
 
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+
 
     const email = useRef(null);
     const password = useRef(null);
     const name = useRef(null);
+    console.log(name)
 
 
 
@@ -38,23 +38,22 @@ const Login = () => {
         // Sign In and Signup Logic
         if (!isSignInForm) {
             // Sign Up Logic
-            createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+            createUserWithEmailAndPassword(auth, email.current.value, password.current.value,name.current.value)
                 .then((userCredential) => {
                     // Signed up 
                     const user = userCredential.user;
                     updateProfile(user, {
-                        displayName: name, photoURL: "https://example.com/jane-q-user/profile.jpg"
-                      }).then(() => {
-                         const {uid,email,displayName} = auth.currentUser;
-                                  
-                                  dispatch(addUser({uid:uid,email:email,displayName:displayName}));
-                      }).catch((error) => {
+                        displayName: nameValue, photoURL: "https://example.com/jane-q-user/profile.jpg"
+                    }).then(() => {
+                        const { uid, email, displayName } = auth.currentUser;
+
+                        dispatch(addUser({ uid: uid, email: email, displayName: displayName }));
+                    }).catch((error) => {
                         // An error occurred
                         // ...
-                      });
-                    console.log(user)
-                    navigate("/browse");
-                    
+                    });
+
+
                 })
                 .catch((error) => {
                     const errorCode = error.code;
@@ -68,11 +67,7 @@ const Login = () => {
             // sign in Logic
             signInWithEmailAndPassword(auth, email.current.value, password.current.value)
                 .then((userCredential) => {
-                    // Signed in 
-                    const user = userCredential.user;
                     
-                    navigate("/browse")
-                    // ...
                 })
                 .catch((error) => {
                     const errorCode = error.code;
