@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popular Movies</title>
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #loading {
+            font-size: 1.5rem;
+            color: #666;
+        }
+
+        #movie-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .movie-item {
+            width: 200px;
+            margin: 10px;
+            padding: 15px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            border-radius: 5px;
+        }
+
+        .movie-item img {
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .movie-item h3 {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .movie-item p {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        /* Hide elements initially */
+        .hidden {
+            display: none;
+        }
+
+        #error {
+            color: red;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Popular Movies</h1>
+        <div id="loading">Loading...</div>
+        <div id="error" class="hidden">Error loading popular movies</div>
+        <div id="movie-list" class="hidden">
+            <!-- Movie items will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'YOUR_API_KEY_HERE'; // Replace with your valid TMDB API key
+        const API_URL = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1`;
+
+         const options = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzNzE5MGJhMTViNzdjNDdhMjdiMDYxM2E2YjA3YWRjZSIsIm5iZiI6MTcwNjgwNDUyNS4xMzEsInN1YiI6IjY1YmJjNTJkY2ZmZWVkMDI1OWFjYjIwNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.UQWdgrOI_JYRMUSV2kaGsF-YF7t82jKSeQKPfeFslA4'
+  }
+};
+
+        // DOM elements
+        const loadingElement = document.getElementById('loading');
+        const errorElement = document.getElementById('error');
+        const movieListElement = document.getElementById('movie-list');
+
+        // Fetch popular movies
+        const fetchPopularMovies = async () => {
+            try {
+                const response = await fetch(API_URL, options);
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Hide loading and error messages
+                    loadingElement.classList.add('hidden');
+                    errorElement.classList.add('hidden');
+                    movieListElement.classList.remove('hidden');
+
+                    // Populate the movie list
+                    const movies = data.results;
+                    movieListElement.innerHTML = movies
+                        .map(movie => {
+                            return `
+                            <div class="movie-item">
+                                <img src="https://image.tmdb.org/t/p/w200${movie.poster_path}" alt="${movie.title}" />
+                                <h3>${movie.title}</h3>
+                                <p>${movie.overview}</p>
+                            </div>
+                            `;
+                        })
+                        .join('');
+                } else {
+                    throw new Error('Failed to fetch movies');
+                }
+            } catch (error) {
+                // Handle errors
+                loadingElement.classList.add('hidden');
+                movieListElement.classList.add('hidden');
+                errorElement.classList.remove('hidden');
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        // Initialize fetch on page load
+        document.addEventListener('DOMContentLoaded', fetchPopularMovies);
+    </script>
+</body>
+
+</html>

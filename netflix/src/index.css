@@ -1,3 +1,13 @@
+/* styles.css or global.css */
 @tailwind base;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+}
+
 @tailwind components;
 @tailwind utilities;
